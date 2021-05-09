@@ -1,16 +1,41 @@
-import React from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { Button } from 'react-native-elements'
 import { StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import Toast from 'react-native-easy-toast'
 
-import { closeSession } from '../../utils/actions'
+import { closeSession,getCurrentUser } from '../../utils/actions'
+import Loading from '../../components/Loading'
+import InfoUser from '../../components/account/InfoUser'
 
 export default function UserLogged() {
+    const toastRef=useRef()
     const navigation = useNavigation()
 
+    const [loading,setLoading] =useState(false)
+    const [loadingText,setLoadingText] =useState("")
+    const [user,setUser] =useState(null)
+    const [reloadUser,setReloadUser] =useState(false)
+
+    useEffect(() => {
+        setUser(getCurrentUser())
+        setReloadUser(false)
+       }, [reloadUser])
+
     return (
-        <View>
-            <Text>UserLogged...</Text>
+        <View style={styles.container}>
+            {
+                user && (
+                    <View>
+                        <InfoUser 
+                            user={user} 
+                            setLoading={setLoading} 
+                            setLoadingText={setLoadingText}
+                        />
+                    </View>
+                )
+            }
+            <Text>Account Options...</Text>
             <Button
                 title="Cerrar Sesión"
                 buttonStyle={styles.btnCloseSession}
@@ -20,6 +45,8 @@ export default function UserLogged() {
                     navigation.navigate("dogs")
                 }}
             />
+            <Toast ref={toastRef} position="center" opacity={0.9}/>
+            <Loading isVisible={loading} text={loadingText}/>
         </View>
     )
 }
