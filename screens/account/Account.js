@@ -1,11 +1,23 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text } from 'react-native'
+import { getCurrentUser } from '../../utils/actions'
+import { isUserLogged } from '../../utils/actions'
 
-export default function Account () {
-    return (
-        <View>
-            <Text>Account…</Text>
-        </View>
-    )
-}
-const styles = StyleSheet.create({})
+import UserGuest from './UserGuest'
+import UserLogged from './UserLogged'
+
+export default function Account() {
+    const [login, setLogin] = useState(null)
+
+    useEffect(() => {
+        setLogin(isUserLogged())
+}, [])
+
+    if (login == null) {
+                 return <Text>Cargando...</Text>
+    }
+
+    return login ? <UserLogged/> : <UserGuest/>
+  }
+
+  const styles = StyleSheet.create({}) 
