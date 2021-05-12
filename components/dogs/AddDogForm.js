@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Alert,Dimensions,StyleSheet, View,ScrollView } from 'react-native'
+import { Alert,Dimensions,StyleSheet, Text,View,ScrollView } from 'react-native'
 import { Avatar,Input,Button,Icon,Image } from 'react-native-elements'
 import { map, size,filter } from 'lodash' 
 import CountryPicker from 'react-native-country-picker-modal'
 
 import {  loadImageFromGallery } from '../../utils/helpers'
+import Modal from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -16,6 +17,8 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
     const [errorAddress, setErrorAddress] = useState(null)
     const [errorPhone, setErrorPhone] = useState(null)
     const [imagesSelected, setImagesSelected] = useState([])
+    const [isVisibleMap, setIsVisibleMap] = useState(false)
+    const [locationDog, setLocationDog] = useState(null)
 
     const addDog=()=>{
         console.log(formData)
@@ -35,6 +38,7 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
                 errorEmail={errorEmail}
                 errorAddress={errorAddress}
                 errorPhone={errorPhone}
+                setIsVisibleMap={setIsVisibleMap}
             />
             <UploadImage
                 toastRef={toastRef}
@@ -46,7 +50,21 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
                 onPress={addDog}
                 buttonStyle={styles.btnAddDog}
             />
+            <MapDog
+                isVisibleMap={isVisibleMap}
+                setIsVisibleMap={setIsVisibleMap}
+                setLocationDog={setLocationDog}
+                toastRef={toastRef}
+            />
         </ScrollView>
+    )
+}
+
+function MapDog({ isVisibleMap, setIsVisibleMap, setLocationDog, toastRef }) {
+    return (
+        <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
+            <Text>Map goes here!!</Text>
+        </Modal>
     )
 }
 
@@ -134,7 +152,8 @@ function FormAdd({
     errorDescription, 
     errorEmail, 
     errorAddress, 
-    errorPhone
+    errorPhone,
+    setIsVisibleMap
 }) {
     const [country, setCountry] = useState("AR")
     const [callingCode, setCallingCode] = useState("54")
@@ -157,6 +176,12 @@ function FormAdd({
                 defaultValue={formData.address}
                 onChange={(e) => onChange(e, "address")}
                 errorMessage={errorAddress}
+                rightIcon={{
+                    type: "material-community",
+                    name: "google-maps",
+                    color: "#747474",
+                    onPress: () => setIsVisibleMap(true)
+                }}
             />
             <Input
                 keyboardType="email-address"
