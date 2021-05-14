@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Luis.Luis-PC\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add react-native-maps@0.27.1
+  C:\Program Files\nodejs\node.exe C:\Users\Luis.Luis-PC\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add react-location
 
 PATH: 
   C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\ManagementStudio\;C:\Program Files (x86)\Microsoft SQL Server\120\DTS\Binn\;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\DTS\Binn\;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\dotnet\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Users\Luis.Luis-PC\.dotnet\tools;C:\Users\Luis.Luis-PC\AppData\Local\GitHubDesktop\bin;C:\Users\Luis.Luis-PC\.dotnet\tools;C:\AppServ\Apache24\bin;C:\AppServ\php7;C:\AppServ\MySQL\bin;C:\Users\Luis.Luis-PC\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Luis.Luis-PC\AppData\Roaming\npm;C:\Program Files\Java\jdk1.8.0_281\bin
@@ -14,7 +14,7 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: EPERM: operation not permitted, unlink 'C:\React-Native\Dogs\node_modules\@babel\generator\node_modules\.bin'
+  Error: EPERM: operation not permitted, unlink 'C:\React-Native\Dogs\node_modules\@babel\helper-compilation-targets\node_modules\.bin'
 
 npm manifest: 
   {
@@ -31,7 +31,7 @@ npm manifest:
       "@react-navigation/bottom-tabs": "^5.11.10",
       "@react-navigation/drawer": "^5.12.5",
       "@react-navigation/native": "^5.9.4",
-      "@react-navigation/stack": "^5.14.4",
+      "@react-navigation/stack": "^5.14.5",
       "expo": "~41.0.1",
       "expo-image-picker": "~10.1.4",
       "expo-permissions": "~12.0.1",
@@ -40,12 +40,14 @@ npm manifest:
       "lodash": "^4.17.21",
       "react": "16.13.1",
       "react-dom": "16.13.1",
+      "react-location": "^2.0.8",
       "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
       "react-native-country-picker-modal": "^2.0.0",
       "react-native-easy-toast": "^2.0.0",
       "react-native-elements": "^3.4.1",
       "react-native-gesture-handler": "~1.10.2",
       "react-native-keyboard-aware-scroll-view": "^0.9.4",
+      "react-native-maps": "0.27.1",
       "react-native-reanimated": "~2.1.0",
       "react-native-safe-area-context": "3.2.0",
       "react-native-screens": "~3.0.0",
@@ -2183,10 +2185,10 @@ Lockfile:
     dependencies:
       nanoid "^3.1.15"
   
-  "@react-navigation/stack@^5.14.4":
-    version "5.14.4"
-    resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-5.14.4.tgz#32f6717c03494f0ca6cf0dd43d8302af824de9e9"
-    integrity sha512-gQjWK8JHtVkD1p7wzjtSPuScJI0mSAk/N/gzgjQZo+rDUwgM8rOTDcVNRbtEOqCEgLQcZrZQHwhOjkrJirehjQ==
+  "@react-navigation/stack@^5.14.5":
+    version "5.14.5"
+    resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-5.14.5.tgz#dc615cd7d270ba79e3330dcb50c2819d0e1f3850"
+    integrity sha512-hpdn1SS0tc3/3atkV2Q2y++n5B4e0rUcCj4W43PODMu72yX2m0LkKAAcpkPDCWAvwnLLIoLAEl5BEifZigl/6A==
     dependencies:
       color "^3.1.3"
       react-native-iphone-x-helper "^1.3.0"
@@ -5809,6 +5811,11 @@ Lockfile:
       end-of-stream "^1.1.0"
       once "^1.3.1"
   
+  qss@^2.0.1:
+    version "2.0.3"
+    resolved "https://registry.yarnpkg.com/qss/-/qss-2.0.3.tgz#630b38b120931b52d04704f3abfb0f861604a9ec"
+    integrity sha512-j48ZBT5IZbSqJiSU8EX4XrN8nXiflHvmMvv2XpFc31gh7n6EpSs75bNr6+oj3FOLWyT8m09pTmqLNl34L7/uPQ==
+  
   query-string@^6.13.6:
     version "6.14.1"
     resolved "https://registry.yarnpkg.com/query-string/-/query-string-6.14.1.tgz#7ac2dca46da7f309449ba0f86b1fd28255b0c86a"
@@ -5861,6 +5868,13 @@ Lockfile:
     version "17.0.2"
     resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
     integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+  
+  react-location@^2.0.8:
+    version "2.0.8"
+    resolved "https://registry.yarnpkg.com/react-location/-/react-location-2.0.8.tgz#bbb3feb8d62cbec0faf48d8e28c16a788990091a"
+    integrity sha512-i4voNvYmtORWMQVwYFDZnoOB+632PcFicNFA3byzhHm9SqpdX8z1YQr8+UuTd3rhg/vzFu3B2X/uufXJhlJNmg==
+    dependencies:
+      qss "^2.0.1"
   
   react-native-country-picker-modal@^2.0.0:
     version "2.0.0"
@@ -5918,6 +5932,11 @@ Lockfile:
     dependencies:
       prop-types "^15.6.2"
       react-native-iphone-x-helper "^1.0.3"
+  
+  react-native-maps@0.27.1:
+    version "0.27.1"
+    resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.27.1.tgz#2f10cd417bb2fd938c9e015b1c9b6d9b1a44b97f"
+    integrity sha512-HygBkZBecTnIVRYrSiLRAvu4OmXOYso/A7c6Cy73HkOh9CgGV8Ap5eBea24tvmFGptjj5Hg8AJ94/YbmWK1Okw==
   
   react-native-ratings@^7.3.0:
     version "7.6.1"

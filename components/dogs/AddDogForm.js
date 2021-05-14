@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState} from 'react'
 import { Alert,Dimensions,StyleSheet, Text,View,ScrollView } from 'react-native'
 import { Avatar,Input,Button,Icon,Image } from 'react-native-elements'
-import { map, size,filter } from 'lodash' 
+import { map, size, filter, isEmpty } from 'lodash' 
 import CountryPicker from 'react-native-country-picker-modal'
+import MapView from 'react-native-maps'
 
-import {  loadImageFromGallery } from '../../utils/helpers'
+import {getCurrentLocation, loadImageFromGallery,validateEmail } from '../../utils/helpers'
 import Modal from '../../components/Modal'
+
 
 const widthScreen = Dimensions.get("window").width
 
@@ -21,9 +23,59 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
     const [locationDog, setLocationDog] = useState(null)
 
     const addDog=()=>{
-        console.log(formData)
+        if (!validForm()) {
+            return
+        }
         console.log("Fuck Yeah!!")
     }   
+
+    const validForm = () => {
+        clearErrors()
+        let isValid = true
+
+        if (isEmpty(formData.name)) {
+            setErrorName("Debes ingresar el nombre de la raza canina.")
+            isValid = false
+        }
+
+        if (isEmpty(formData.address)) {
+            setErrorAddress("Debes ingresar la dirección de la raza canina.")
+            isValid = false
+        }
+
+        if (!validateEmail(formData.email)) {
+            setErrorEmail("Debes ingresar un email de raza canina válido.")
+            isValid = false
+        }
+
+        if (size(formData.phone) < 10) {
+            setErrorPhone("Debes ingresar un teléfono de raza canina válido.")
+            isValid = false
+        }
+
+        if (isEmpty(formData.description)) {
+            setErrorDescription("Debes ingresar una descripción de la raza canina.")
+            isValid = false
+        }
+
+        if (!locationDog) {
+            toastRef.current.show("Debes de localizar la raza canina en el mapa.", 3000)
+            isValid = false
+        } else if(size(imagesSelected) === 0) {
+            toastRef.current.show("Debes de agregar al menos una imagen de la raza canina.", 3000)
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    const clearErrors = () => {
+        setErrorAddress(null)
+        setErrorDescription(null)
+        setErrorEmail(null)
+        setErrorName(null)
+        setErrorPhone(null)
+    }
 
     return (
         <ScrollView style={styles.viewContainer}>
@@ -39,6 +91,7 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
                 errorAddress={errorAddress}
                 errorPhone={errorPhone}
                 setIsVisibleMap={setIsVisibleMap}
+                locationDog={locationDog}
             />
             <UploadImage
                 toastRef={toastRef}
@@ -61,11 +114,60 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
 }
 
 function MapDog({ isVisibleMap, setIsVisibleMap, setLocationDog, toastRef }) {
-    return (
-        <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
-            <Text>Map goes here!!</Text>
-        </Modal>
-    )
+    const [newRegion, setNewRegion] = useState(null)
+    useEffect(() => {
+        (async() => {
+            const response = await getCurrentLocation()
+            if (response.status) {
+                setNewRegion(response.location)
+            }
+        })()
+    }, [])
+
+    const confirmLocation = () => {
+        setLocationDog(newRegion)
+        toastRef.current.show("Localización guardada correctamente.", 3000)
+        setIsVisibleMap(false)
+    }
+        return (
+            <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
+                <View>
+                    {
+                        newRegion && (
+                            <MapView
+                                style={styles.mapStyle}
+                                initialRegion={newRegion}
+                                showsUserLocation={true}
+                                onRegionChange={(region) => setNewRegion(region)}
+                            >
+                                <MapView.Marker
+                                coordinate={{
+                                    latitude: newRegion.latitude,
+                                    longitude: newRegion.longitude
+                                }}
+                                draggable
+                            />
+                            </MapView>
+                        )
+                    }
+                    <View style={styles.viewMapBtn}>
+                    <Button
+                        title="Guardar Ubicación"
+                        containerStyle={styles.viewMapBtnContainerSave}
+                        buttonStyle={styles.viewMapBtnSave}
+                        onPress={confirmLocation}
+                    />
+                    <Button
+                        title="Cancelar Ubicación"
+                        containerStyle={styles.viewMapBtnContainerCancel}
+                        buttonStyle={styles.viewMapBtnCancel}
+                        onPress={() => setIsVisibleMap(false)}
+                    />
+                </View>
+                </View>
+
+            </Modal>
+        )
 }
 
 function ImageDog({ imageDog }) {
@@ -153,7 +255,8 @@ function FormAdd({
     errorEmail, 
     errorAddress, 
     errorPhone,
-    setIsVisibleMap
+    setIsVisibleMap,
+    locationDog
 }) {
     const [country, setCountry] = useState("AR")
     const [callingCode, setCallingCode] = useState("54")
@@ -179,7 +282,7 @@ function FormAdd({
                 rightIcon={{
                     type: "material-community",
                     name: "google-maps",
-                    color: "#747474",
+                    color: locationDog ? "#a42424" : "#747474",
                     onPress: () => setIsVisibleMap(true)
                 }}
             />
@@ -286,5 +389,26 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: 200,
         marginBottom: 20
+    },
+    mapStyle: {
+        width: "100%",
+        height: 550
+    },
+    viewMapBtn: {
+        flexDirection: "row",
+        justifyContent: "center",
+        marginTop: 10
+    },
+    viewMapBtnContainerCancel: {
+        paddingLeft: 5
+    },
+    viewMapBtnContainerSave: {
+        paddingRight: 5,
+    },
+    viewMapBtnCancel: {
+        backgroundColor: "#c27c5d"
+    },
+    viewMapBtnSave: {
+        backgroundColor: "#a42424"
     }
 })
