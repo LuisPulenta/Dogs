@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier":"com.luisnu.dogs"
     },
     "android": {
+      "package":"com.luisnu.dogs",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB8aAevlbrQOjPoRqcjZeIMkKgScG3d4nM"
+        }
       },
       "permissions": [
         "CAMERA_ROLL",

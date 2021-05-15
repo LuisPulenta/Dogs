@@ -105,3 +105,37 @@ export const updatePassword = async(password) => {
     }
     return result     
 }
+
+export const addDocumentWithoutId = async(collection, data) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        await db.collection(collection).add(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const getDogs = async(limitDogs) => {
+    const result = { statusResponse: true, error: null, dogs: [], startDog: null }
+    try {
+        const response = await db
+            .collection("dogs")
+            .orderBy("name", "asc")
+            .limit(limitDogs)
+            .get()
+        if (response.docs.length > 0) {
+            result.startDog = response.docs[response.docs.length - 1]
+        }
+        response.forEach((doc) => {
+            const dog = doc.data()
+            dog.id = doc.id
+            result.dogs.push(dog)
+        })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}

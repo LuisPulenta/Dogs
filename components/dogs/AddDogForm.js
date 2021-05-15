@@ -4,8 +4,10 @@ import { Avatar,Input,Button,Icon,Image } from 'react-native-elements'
 import { map, size, filter, isEmpty } from 'lodash' 
 import CountryPicker from 'react-native-country-picker-modal'
 import MapView from 'react-native-maps'
+import uuid from 'random-uuid-v4'
 
 import {getCurrentLocation, loadImageFromGallery,validateEmail } from '../../utils/helpers'
+import { addDocumentWithoutId,getCurrentUser,uploadImage } from '../../utils/actions'
 import Modal from '../../components/Modal'
 
 
@@ -22,12 +24,50 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
     const [isVisibleMap, setIsVisibleMap] = useState(false)
     const [locationDog, setLocationDog] = useState(null)
 
-    const addDog=()=>{
+    const addDog=async()=>{
         if (!validForm()) {
             return
         }
-        console.log("Fuck Yeah!!")
+        setLoading(true)
+        const responseUploadImages = await uploadImages()   
+        const dog = {
+            name: formData.name,
+            address: formData.address,
+            description: formData.description,
+            callingCode: formData.callingCode,
+            phone: formData.phone,
+            location: locationDog,
+            email:formData.email,
+            images: responseUploadImages,
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            createAt: new Date(),
+            createBy: getCurrentUser().uid
+        }
+        const responseAddDocument = await addDocumentWithoutId("dogs", dog)
+        
+        setLoading(false)
+
+        if (!responseAddDocument.statusResponse) {
+            toastRef.current.show("Error al grabar la raza canina, por favor intenta más tarde.", 3000)
+            return
+        }
+        navigation.navigate("dogs")
     }   
+
+    const uploadImages = async() => {
+        const imagesUrl = []
+        await Promise.all(
+            map(imagesSelected, async(image) => {
+                const response = await uploadImage(image, "dogs", uuid())
+                if (response.statusResponse) {
+                    imagesUrl.push(response.url)
+                }
+            })
+        )
+        return imagesUrl
+    }
 
     const validForm = () => {
         clearErrors()
