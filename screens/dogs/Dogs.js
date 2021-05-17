@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native'
+import { size } from 'lodash'
 import firebase from 'firebase/app'
 
 import Loading from '../../components/Loading'
-import { getDogs } from '../../utils/actions'
+import ListDogs from '../../components/dogs/ListDogs'
+import { getMoreDogs,getDogs } from '../../utils/actions'
 
 export default function Dogs({navigation}) {
 const [user, setUser] = useState(null)
@@ -14,7 +16,6 @@ const [startDog, setStartDog] = useState(null)
     const [loading, setLoading] = useState(false)
 
     const limitDogs = 7
-    console.log(dogs)
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged((userInfo) => {
@@ -37,13 +38,39 @@ const [startDog, setStartDog] = useState(null)
         }, [])
     )
 
+    const handleLoadMore = async() => {
+        if (!startDog) {
+            return
+        }
+
+        setLoading(true)
+        const response = await getMoreDogs(limitDogs, startDog)
+        if (response.statusResponse) {
+            setStartDog(response.startDog)
+            setDogs([...dogs, ...response.dogs])
+        }
+        setLoading(false)
+    }
+
     if (user === null){
         return<Loading isVisible={true} text="Cargando..."/>
     }
 
     return (
         <View style={styles.viewBody}>
-            <Text>Dogs…</Text>
+            {
+                size(dogs) > 0 ? (
+                    <ListDogs
+                        dogs={dogs}
+                        navigation={navigation}
+                        handleLoadMore={handleLoadMore}
+                    />
+                ) : (
+                    <View style={styles.notFoundView}>
+                        <Text style={styles.notFoundText}>No hay razas caninas registradas.</Text>
+                    </View>
+                )
+            }
             {
                 user && (
                 <Icon
@@ -71,5 +98,14 @@ const styles = StyleSheet.create({
         shadowColor: "black",
         shadowOffset: { width: 2, height: 2},
         shadowOpacity: 0.5
+    },
+    notFoundView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    notFoundText: {
+        fontSize: 18,
+        fontWeight: "bold"
     }
 })
