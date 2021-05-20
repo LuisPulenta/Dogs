@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Alert,Dimensions,StyleSheet, Text, ScrollView,View } from 'react-native'
 import { getDocumentById} from '../../utils/actions'
 import { Icon,ListItem,Rating } from 'react-native-elements'
 import { map } from 'lodash'
+import { useFocusEffect } from '@react-navigation/native'
 import CarouselImages from '../../components/CarouselImages'
 import Loading from '../../components/Loading'
 import MapDog from '../../components/dogs/MapDog'
 import { formatPhone } from '../../utils/helpers'
+import ListReviews from '../../components/dogs/ListReviews'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -16,17 +18,20 @@ export default function Dog({ navigation, route }) {
     const [activeSlide, setActiveSlide] = useState(0)
     navigation.setOptions({ title: name })
 
-    useEffect(() => {
-        (async() => {
-            const response = await getDocumentById("dogs", id)
-            if (response.statusResponse) {
-                setDog(response.document)
-            } else {
-                setDog({})
-                Alert.alert("Ocurrió un problema cargando la raza canina, intente más tarde.")
-            }
-        })()
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            (async() => {
+                const response = await getDocumentById("dogs", id)
+                if (response.statusResponse) {
+                    setDog(response.document)
+                } else {
+                    setDog({})
+                    Alert.alert("Ocurrió un problema cargando la raza canina, intente más tarde.")
+                }
+            })()
+        }, [])
+    )
+   
 
     if (!dog) {
         return <Loading isVisible={true} text="Cargando..."/>
@@ -54,8 +59,11 @@ export default function Dog({ navigation, route }) {
                 email={dog.email}
                 phone={formatPhone(dog.callingCode, dog.phone)}
             />
+            <ListReviews
+             navigation={navigation}
+             idDog={dog.id}
+            />
         </ScrollView>
-        
     )
 }
 

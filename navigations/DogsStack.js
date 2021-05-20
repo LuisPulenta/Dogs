@@ -3,6 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack'
 import Dogs from '../screens/dogs/Dogs'
 import AddDog from '../screens/dogs/AddDog'
 import Dog from '../screens/dogs/Dog'
+import AddReviewDog from '../screens/dogs/AddReviewDog'
 
 const Stack=createStackNavigator()
 
@@ -24,6 +25,12 @@ export default function DogsStack() {
             <Stack.Screen
                 name="dog"
                 component={Dog}
+            />
+
+            <Stack.Screen
+                name="add-review-dog"
+                component={AddReviewDog}
+                options={{title:"Nuevo Comentario"}}
             />
         </Stack.Navigator>
     )
