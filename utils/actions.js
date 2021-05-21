@@ -206,3 +206,19 @@ export const getDogReviews = async(id) => {
     }
     return result
 }
+
+export const getIsFavorite = async(idDog) => {
+    const result = { statusResponse: true, error: null, isFavorite: false }
+    try {
+        const response = await db
+            .collection("favorites")
+            .where("idDog", "==", idDog)
+            .where("idUser", "==", getCurrentUser().uid)
+            .get()
+        result.isFavorite = response.docs.length > 0
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
