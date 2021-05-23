@@ -265,3 +265,23 @@ export const getFavorites = async() => {
     }
     return result     
 }
+
+export const getTopDogs = async(limit) => {
+    const result = { statusResponse: true, error: null, dogs: [] }
+    try {
+        const response = await db
+            .collection("dogs")
+            .orderBy("rating", "desc")
+            .limit(limit)
+            .get()
+        response.forEach((doc) => {
+            const dog = doc.data()
+            dog.id = doc.id
+            result.dogs.push(dog)
+        })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}

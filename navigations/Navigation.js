@@ -57,7 +57,7 @@ export default function Navigation() {
                 <Tab.Screen
                     name="dogs"
                     component={DogsStack}
-                    options={{ title: "Perros" }}
+                    options={{ title: "Razas caninas" }}
                 />
                 <Tab.Screen
                     name="favorites"

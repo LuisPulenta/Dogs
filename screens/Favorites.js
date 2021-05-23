@@ -76,11 +76,65 @@ export default function Favorites({ navigation }) {
     )
 }
 
-function Dog({ dog, setLoading, toastRef, navigation }) {
+function Dog({ dog, setLoading, toastRef, navigation,setReloadData }) {
     const { id, name, images } = dog.item
+
+    const confirmRemoveFavorite = () => {
+        Alert.alert(
+            "Eliminar raza canina de favoritas",
+            "¿Está seguro de querer borrar la raza canina de favoritas?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Sí",
+                    onPress: removeFavorite
+                }
+            ],
+            { cancelable: false }
+        )
+    }
+
+    const removeFavorite = async() => {
+        setLoading(true)
+        const response = await deleteFavorite(id)
+        setLoading(false)
+        if (response.statusResponse) {
+            setReloadData(true)
+            toastRef.current.show("Raza canina eliminada de favoritas.", 3000)
+        } else {
+            toastRef.current.show("Error al eliminar la raza canina de favoritas.", 3000)
+        }
+    }
+
     return(
-        <View>
-            <Text>{name}</Text>
+        <View style={styles.dog}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("dogs", {
+                    screen: "dog",
+                    params: { id, name }
+                })}
+            >
+                <Image
+                    resizeMode="cover"
+                    style={styles.image}
+                    PlaceholderContent={<ActivityIndicator color="#fff"/>}
+                    source={{ uri: images[0] }}
+                />
+                <View style={styles.info}>
+                    <Text style={styles.name}>{name}</Text>
+                    <Icon
+                        type="material-community"
+                        name="heart"
+                        color="#f00"
+                        containerStyle={styles.favorite}
+                        underlayColor="transparent"
+                        onPress={confirmRemoveFavorite}
+                    />
+                </View>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -120,5 +174,32 @@ const styles = StyleSheet.create({
     },
     loaderDog: {
         marginVertical: 10
+    } ,
+    dog: {
+        margin: 10
+    },
+    image: {
+        width: "100%",
+        height: 180
+    },
+    info: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexDirection: "row",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        marginTop: -30,
+        backgroundColor: "#fff"
+    },
+    name: {
+        fontWeight: "bold",
+        fontSize: 20
+    },
+    favorite: {
+        marginTop: -35,
+        backgroundColor: "#fff",
+        padding: 15,
+        borderRadius: 100
     } 
 })
