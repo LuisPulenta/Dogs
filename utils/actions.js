@@ -1,10 +1,12 @@
 import { firebaseApp } from './firebase'
+import { FireSQL } from 'firesql'
 import * as firebase from 'firebase'
 import 'firebase/firestore'
 import { fileToBlob } from './helpers'
 import { map } from 'lodash'
 
 const db = firebase.firestore(firebaseApp)
+const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" })
 
 export const isUserLogged = () => {
     let isLogged = false
@@ -279,6 +281,17 @@ export const getTopDogs = async(limit) => {
             dog.id = doc.id
             result.dogs.push(dog)
         })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result     
+}
+
+export const searchDogs = async(criteria) => {
+    const result = { statusResponse: true, error: null, dogs: [] }
+    try {
+        result.dogs = await fireSQL.query(`SELECT * FROM dogs WHERE name LIKE '${criteria}%'`)
     } catch (error) {
         result.statusResponse = false
         result.error = error

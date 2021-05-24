@@ -10,8 +10,6 @@ export default function TopDogs ({navigation}) {
     const [dogs, setDogs] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    console.log(dogs)
-
     useFocusEffect(
         useCallback(() =>{
            async function getData(){

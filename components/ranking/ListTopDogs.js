@@ -3,7 +3,7 @@ import { StyleSheet, Text, View ,FlatList,TouchableOpacity,ActivityIndicator} fr
 import { Card,Rating,  Icon,  Image } from 'react-native-elements'
 
 export default function ListTopDogs({dogs,navigation}) {
-    console.log(dogs)
+    
     return (
         <FlatList 
             data={dogs} 

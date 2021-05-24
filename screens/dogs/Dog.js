@@ -190,7 +190,7 @@ function DogInfo({
                     >
                         <Icon
                             type="material-community"
-                            name={item.iconLeft}
+                            name={item.iconName}
                             color="#a42424"
                             onPress={() => actionLeft(item.type)}
                         />
