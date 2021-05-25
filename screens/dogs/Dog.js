@@ -18,7 +18,7 @@ import {
     getIsFavorite, 
     deleteFavorite
 } from '../../utils/actions'
-import { formatPhone } from '../../utils/helpers'
+import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -31,6 +31,7 @@ export default function Dog({ navigation, route }) {
     
     const [isFavorite, setIsFavorite] = useState(false)
     const [userLogged, setUserLogged] = useState(false)
+    const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(false)
     
     firebase.auth().onAuthStateChanged(user => {
@@ -131,6 +132,9 @@ export default function Dog({ navigation, route }) {
                 address={dog.address}
                 email={dog.email}
                 phone={formatPhone(dog.callingCode, dog.phone)}
+                currentUser={currentUser}
+                callingCode={dog.callingCode}
+                phoneNoFormat={dog.phone}
             />
             <ListReviews
              navigation={navigation}
@@ -164,13 +168,40 @@ function DogInfo({
     location, 
     address, 
     email, 
-    phone
+    phone,
+    currentUser,
+    callingCode,
+    phoneNoFormat
 }) {
     const listInfo = [
-        { type: "addres", text: address, iconName: "map-marker" },
-        { type: "phone", text: phone, iconName: "phone"},
-        { type: "email", text: email, iconName: "at" },
+        { type: "addres", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
+        { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
+        { type: "email", text: email, iconLeft: "at" },
     ]
+
+    const actionLeft = (type) => {
+        if (type == "phone") {
+            callNumber(phone)
+        } else if (type == "email") {
+            if (currentUser) {
+                sendEmail(email, "Interesado", `Soy ${currentUser.displayName}, estoy interesado en sus servicios`)
+            } else {
+                sendEmail(email, "Interesado", `Estoy interesado en sus servicios`)
+            }
+        }
+    }
+
+    const actionRight = (type) => {
+        if (type == "phone") {
+            if (currentUser) {
+                sendWhatsApp(`${callingCode} ${phoneNoFormat}`, `Soy ${currentUser.displayName}, estoy interesado en sus servicios`)
+            } else {
+                sendWhatsApp(`${callingCode} ${phoneNoFormat}`, `Estoy interesado en sus servicios`)
+            }
+        } else if (type == "addres") {
+            setModalNotification(true)
+        }
+    }
 
     return (
         <View style={styles.viewDogInfo}>
@@ -188,15 +219,25 @@ function DogInfo({
                         key={index}
                         style={styles.containerListItem}
                     >
-                        <Icon
+                         <Icon
                             type="material-community"
-                            name={item.iconName}
+                            name={item.iconLeft}
                             color="#a42424"
                             onPress={() => actionLeft(item.type)}
                         />
                         <ListItem.Content>
                             <ListItem.Title>{item.text}</ListItem.Title>
                         </ListItem.Content>
+                        {
+                            item.iconRight && (
+                                <Icon
+                                    type="material-community"
+                                    name={item.iconRight}
+                                    color="#a42424"
+                                    onPress={() => actionRight(item.type)}
+                                />
+                            )
+                        }
                     </ListItem>
                 ))
             }
