@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { View } from 'react-native'
 import { Alert, Dimensions, StyleSheet, Text, ScrollView } from 'react-native'
-import { ListItem, Rating, Icon } from 'react-native-elements'
-import { map } from 'lodash'
+import { ListItem, Rating, Icon, Input, Button } from 'react-native-elements'
+import { isEmpty, map } from 'lodash'
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app'
 import Toast from 'react-native-easy-toast'
@@ -16,9 +16,13 @@ import {
     getCurrentUser, 
     getDocumentById, 
     getIsFavorite, 
-    deleteFavorite
+    deleteFavorite,
+    sendPushNotification, 
+    getUsersFavorite,
+    setNotificationMessage
 } from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
+import Modal from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -33,6 +37,7 @@ export default function Dog({ navigation, route }) {
     const [userLogged, setUserLogged] = useState(false)
     const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [modalNotification, setModalNotification] = useState(false)
     
     firebase.auth().onAuthStateChanged(user => {
         user ? setUserLogged(true) : setUserLogged(false)
@@ -135,14 +140,114 @@ export default function Dog({ navigation, route }) {
                 currentUser={currentUser}
                 callingCode={dog.callingCode}
                 phoneNoFormat={dog.phone}
+                setLoading={setLoading}
+                setModalNotification={setModalNotification}
             />
             <ListReviews
              navigation={navigation}
              idDog={dog.id}
             />
+             <SendMessage
+                modalNotification={modalNotification}
+                setModalNotification={setModalNotification}
+                setLoading={setLoading}
+                dog={dog}
+            />
             <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text="Por favor espere..."/>
         </ScrollView>
+    )
+}
+
+function SendMessage ({ modalNotification, setModalNotification, setLoading, dog }) {
+    const [title, setTitle] = useState(null)
+    const [errorTitle, setErrorTitle] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
+
+    const sendNotification = async() => {
+        if (!validForm()) {
+            return
+        }
+
+        setLoading(true)
+        const userName = getCurrentUser().displayName ? getCurrentUser().displayName : "Anónimo"
+        const theMessage = `${message}, de la raza canina: ${dog.name}`
+
+        const usersFavorite = await getUsersFavorite(dog.id)
+        if (!usersFavorite.statusResponse) {
+            setLoading(false)
+            Alert.alert("Error al obtener los usuarios que aman la raza canina.")
+            return
+        }
+     
+        await Promise.all (
+            map(usersFavorite.users, async(user) => {
+                const messageNotification = setNotificationMessage(
+                    user.token,
+                    `${userName}, dijo: ${title}`,
+                    theMessage,
+                    { data: theMessage}
+                )
+        
+                await sendPushNotification(messageNotification)
+            })
+        )
+
+        setLoading(false)
+        setTitle(null)
+        setMessage(null)
+        setModalNotification(false)
+        }
+    
+
+    const validForm = () => {
+        let isValid = true;
+
+        if (isEmpty(title)) {
+            setErrorTitle("Debes ingresar un título a tu mensaje.")
+            isValid = false
+        }
+
+        if (isEmpty(message)) {
+            setErrorMessage("Debes ingresar un mensaje.")
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    return (
+        <Modal
+            isVisible={modalNotification}
+            setVisible={setModalNotification}
+        >
+            <View style={styles.modalContainer}>
+                <Text style={styles.textModal}>
+                    Envíale un mensaje a los amantes de la raza canina {dog.name}
+                </Text>
+                <Input
+                    placeholder="Título del mensaje..."
+                    onChangeText={(text) => setTitle(text)}
+                    value={title}
+                    errorMessage={errorTitle}
+                />
+                <Input
+                    placeholder="Mensaje..."
+                    multiline
+                    inputStyle={styles.textArea}
+                    onChangeText={(text) => setMessage(text)}
+                    value={message}
+                    errorMessage={errorMessage}
+                />
+                <Button
+                    title="Enviar Mensaje"
+                    buttonStyle={styles.btnSend}
+                    containerStyle={styles.btnSendContainer}
+                    onPress={sendNotification}
+                />
+            </View>
+        </Modal>
     )
 }
 
@@ -171,7 +276,9 @@ function DogInfo({
     phone,
     currentUser,
     callingCode,
-    phoneNoFormat
+    phoneNoFormat,
+    setLoading,
+    setModalNotification 
 }) {
     const listInfo = [
         { type: "addres", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
@@ -202,6 +309,8 @@ function DogInfo({
             setModalNotification(true)
         }
     }
+
+    
 
     return (
         <View style={styles.viewDogInfo}>
@@ -294,5 +403,24 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 34,
         padding: 5,
         paddingLeft: 5
+    },
+    textArea: {
+        height: 50,
+        paddingHorizontal: 10
+    },
+    btnSend: {
+        backgroundColor: "#a42424"
+    },
+    btnSendContainer: {
+        width: "95%"
+    },
+    textModal: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    modalContainer: {
+        justifyContent: "center",
+        alignItems: "center"
     }
 })
