@@ -139,7 +139,7 @@ export default function AddDogForm({toastRef,setLoading,navigation}) {
                 setImagesSelected={setImagesSelected}
             />
             <Button
-                title="Crear Raza de Perro"
+                title="Crear Raza Canina"
                 onPress={addDog}
                 buttonStyle={styles.btnAddDog}
             />
@@ -309,7 +309,7 @@ function FormAdd({
     return (
         <View style={styles.viewForm}>
             <Input
-                placeholder="Nombre de la raza de perro..."
+                placeholder="Nombre de la raza canina..."
                 defaultValue={formData.name}
                 onChange={(e) => onChange(e, "name")}
                 errorMessage={errorName}

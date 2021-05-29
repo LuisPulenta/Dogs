@@ -19,7 +19,7 @@ export default function DogsStack() {
             <Stack.Screen
                 name="add-dog"
                 component={AddDog}
-                options={{title:"Crear Raza de Perro"}}
+                options={{title:"Crear Raza Canina"}}
             />
 
             <Stack.Screen

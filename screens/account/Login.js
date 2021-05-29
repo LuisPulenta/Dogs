@@ -17,11 +17,28 @@ export default function Login() {
             <View style={styles.container}>
                 <LoginForm/>
                 <CreateAccount/>
+                <RecoverPassword/>
             </View>
             <Divider style={styles.divider}/>
         </KeyboardAwareScrollView>
     )
 }
+
+function RecoverPassword() {
+    const navigation = useNavigation()
+
+    return (
+        <Text 
+            style={styles.register}
+            onPress={() => navigation.navigate("recover-password")}
+        >
+            ¿Olvidaste tu contraseña?.{" "}
+            <Text style={styles.btnRegister}>
+                Recupérala
+            </Text>
+        </Text>
+    )
+} 
 
 function CreateAccount(props) {
     const navigation = useNavigation()

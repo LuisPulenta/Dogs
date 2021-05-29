@@ -11,7 +11,7 @@ export function validateEmail(email) {
 
 export const loadImageFromGallery = async(array) => {
     const response = { status: false, image: null }
-    const resultPermissions = await Permissions.askAsync(Permissions.CAMERA)
+    const resultPermissions = await Permissions.askAsync(Permissions.MEDIA_LIBRARY)
     if (resultPermissions.status === "denied") {
         Alert.alert("Debes de darle permiso para acceder a las imágenes del teléfono.")
         return response

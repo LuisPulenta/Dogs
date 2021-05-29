@@ -18,7 +18,7 @@ export default function AddDog({navigation}) {
             setLoading={setLoading}
             navigation={navigation}
             />
-            <Loading isVisible={loading} text="Creando raza de perro..."/>
+            <Loading isVisible={loading} text="Creando raza canina..."/>
             <Toast ref={toastRef} position="center" opacity={0.9}/>
         </KeyboardAwareScrollView>
     )
